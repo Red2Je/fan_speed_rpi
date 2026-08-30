@@ -1,0 +1,18 @@
+[Unit]
+Description=Raspberry Pi Fan Control Service
+After=network.target
+
+[Service]
+Type=simple
+User=rasp
+Group=rasp
+WorkingDirectory=/opt/fan-control
+ExecStart=/opt/fan-controller/venv/bin/python3 /opt/fan-controller/fan_controller.py
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fan-controller
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -4,6 +4,3 @@ temperature:
   min_speed : 20
   max_speed : 100
   refresh_time: 10
-
-logging : 
-  log_retention_days : 7

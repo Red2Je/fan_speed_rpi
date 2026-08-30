@@ -3,8 +3,7 @@ import psutil
 import RPi.GPIO as GPIO
 import time
 import logging
-from logging.handlers import TimedRotatingFileHandler
-
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +22,23 @@ def refresh_variables() :
     min_speed = configuration["temperature"]["min_speed"]
     max_speed = configuration["temperature"]["max_speed"]
     refresh_time = configuration["temperature"]["refresh_time"]
-    log_retention = configuration["logging"]["log_retention_days"]
     
     
 
-    return min_temp, max_temp, min_speed, max_speed, refresh_time, log_retention
+    return min_temp, max_temp, min_speed, max_speed, refresh_time
 
 def __main__() :
-    
+
+    #Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        handlers = [
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+
+
     #Setup the GPIO module to communicate with the pin number 14 on the raspberry
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(FAN_PIN, GPIO.OUT)
@@ -38,16 +46,10 @@ def __main__() :
 
     configuration = retrieve_config()
     speed = configuration["temperature"]["min_speed"]
-    #Setup logging
-    log_retention = configuration["logging"]["log_retention_days"]
-    handler = TimedRotatingFileHandler(filename="fan_speed.log", when = "D", interval = 1, backupCount=log_retention, delay=False)
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
 
     while 1 :
         actual_temperature = psutil.sensors_temperatures()["cpu_thermal"][0].current
-        min_temp, max_temp, min_speed, max_speed, refresh_time, log_retention = refresh_variables()
-        handler.backupCount = log_retention
+        min_temp, max_temp, min_speed, max_speed, refresh_time= refresh_variables()
 
         if actual_temperature < min_temp : 
             speed = min_speed
