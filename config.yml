@@ -1,0 +1,9 @@
+temperature:
+  min_temp : 30
+  max_temp : 65
+  min_speed : 20
+  max_speed : 100
+  refresh_time: 10
+
+logging : 
+  log_retention_days : 7
