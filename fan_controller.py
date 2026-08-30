@@ -38,30 +38,32 @@ def __main__() :
         ]
     )
 
+    try : 
 
-    #Setup the GPIO module to communicate with the pin number 14 on the raspberry
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(FAN_PIN, GPIO.OUT)
-    pwm = GPIO.PWM(FAN_PIN, 100)
+        #Setup the GPIO module to communicate with the pin number 14 on the raspberry
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(FAN_PIN, GPIO.OUT)
+        pwm = GPIO.PWM(FAN_PIN, 100)
 
-    configuration = retrieve_config()
-    speed = configuration["temperature"]["min_speed"]
+        configuration = retrieve_config()
+        speed = configuration["temperature"]["min_speed"]
 
-    while 1 :
-        actual_temperature = psutil.sensors_temperatures()["cpu_thermal"][0].current
-        min_temp, max_temp, min_speed, max_speed, refresh_time= refresh_variables()
+        while 1 :
+            actual_temperature = psutil.sensors_temperatures()["cpu_thermal"][0].current
+            min_temp, max_temp, min_speed, max_speed, refresh_time= refresh_variables()
 
-        if actual_temperature < min_temp : 
-            speed = min_speed
-        elif actual_temperature > max_temp :
-            speed = max_speed 
-        else : 
-            speed = round(min_speed + (max_speed - min_speed)*((actual_temperature-min_temp)/(max_temp-min_temp)))
+            if actual_temperature < min_temp : 
+                speed = min_speed
+            elif actual_temperature > max_temp :
+                speed = max_speed 
+            else : 
+                speed = round(min_speed + (max_speed - min_speed)*((actual_temperature-min_temp)/(max_temp-min_temp)))
 
-        logger.info(f"Set fan speed to {speed} for temperature {actual_temperature}")
-        pwm.start(speed)
+            logger.info(f"Set fan speed to {speed} for temperature {actual_temperature}")
+            pwm.start(speed)
 
-        time.sleep(refresh_time)
-
+            time.sleep(refresh_time)
+    finally : 
+        GPIO.cleanup()
 
 __main__()
