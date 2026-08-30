@@ -27,7 +27,7 @@ fi
 $APP_DIR/venv/bin/pip install -r requirements.txt
 
 # 3. Install and enable systemd service
-sudo cp fan-controller.service /etc/systemd/system/
+sudo cp fan_controller.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable fan-controller.service
 sudo systemctl restart fan-controller.service
