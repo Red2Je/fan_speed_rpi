@@ -1,5 +1,5 @@
 pyyaml
 psutil
-RPi
+RPi.GPIO
 time
 logging
